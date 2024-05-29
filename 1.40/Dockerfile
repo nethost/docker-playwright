@@ -3,7 +3,7 @@ FROM ubuntu:focal as node
 ENV DEBIAN_FRONTEND=noninteractive
 ENV NVM_DIR "/root/.nvm"
 ENV NVM_VERSION "0.39.1"
-ENV NODE_VERSION "20.9.0"
+ENV NODE_VERSION "22.2.0"
 ENV NODE_PATH "$NVM_DIR/v$NODE_VERSION/lib/node_modules"
 ENV PATH "$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH"
 
@@ -71,7 +71,7 @@ RUN [ $(arch) == "armv7l" ] || [ $(arch) == "aarch64" ] || playwright-core insta
 
 ### Lightweight Playwright ###
 
-FROM nethost/node:20.9 as latest
+FROM nethost/node:22.2 as latest
 LABEL maintainer="hi@billgo.me"
 ENV IMAGE_INFO="Alpine $(cat /etc/alpine-release), Node $(node -v), Playwright $(playwright -V), Chrome $(/usr/bin/google-chrome --version)"
 RUN yarn global add playwright-core@1.40 && apk update && apk add --no-cache chromium
