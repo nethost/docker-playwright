@@ -10,6 +10,7 @@ ENV PATH "$NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH"
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 RUN apt update && apt -y install curl libatomic1 ffmpeg make python3 gcc g++ lsb-core fonts-noto-cjk fonts-wqy-zenhei && apt-get clean
 RUN curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_VERSION/install.sh" | bash && rm -rf "$NVM_DIR/.cache"
+RUN fc-cache -vf
 
 FROM node as base
 
@@ -74,5 +75,14 @@ RUN [ $(arch) == "armv7l" ] || [ $(arch) == "aarch64" ] || playwright-core insta
 FROM nethost/node:22.2 as latest
 LABEL maintainer="hi@billgo.me"
 ENV IMAGE_INFO="Alpine $(cat /etc/alpine-release), Node $(node -v), Playwright $(playwright -V), Chrome $(/usr/bin/google-chrome --version)"
-RUN yarn global add playwright-core@1.40 && apk update && apk add --no-cache chromium
+# 安装 Playwright 核心库和所需的中文字体
+RUN yarn global add playwright-core@1.40 && \
+    apk update && \
+    apk add --no-cache \
+    chromium \
+    ttf-wqy-microhei \
+    ttf-wqy-zenhei
+
+ENV PATH="/usr/bin/chromium:${PATH}"
+RUN mkdir -p /usr/share/fonts && fc-cache -fv
 CMD eval echo $IMAGE_INFO
