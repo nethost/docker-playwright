@@ -72,17 +72,10 @@ RUN [ $(arch) == "armv7l" ] || [ $(arch) == "aarch64" ] || playwright-core insta
 
 ### Lightweight Playwright ###
 
-FROM nethost/node:22.2 as latest
+FROM node as latest
 LABEL maintainer="hi@billgo.me"
-ENV IMAGE_INFO="Alpine $(cat /etc/alpine-release), Node $(node -v), Playwright $(playwright -V), Chrome $(/usr/bin/google-chrome --version)"
-# 安装 Playwright 核心库和所需的中文字体
-RUN yarn global add playwright-core@1.40 && \
-    apk update && \
-    apk add --no-cache \
-    chromium \
-    ttf-wqy-microhei \
-    ttf-wqy-zenhei
-
+ENV IMAGE_INFO="$(lsb_release -ds), Node $(node -v), Playwright $(playwright -V)"
+RUN npm i -g yarn@1.22.19 playwright-core@1.40 && rm -rf /root/.npm
+RUN playwright-core install --with-deps chromium
 ENV PATH="/usr/bin/chromium:${PATH}"
-RUN mkdir -p /usr/share/fonts && fc-cache -fv
 CMD eval echo $IMAGE_INFO
