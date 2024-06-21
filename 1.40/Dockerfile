@@ -77,7 +77,10 @@ LABEL maintainer="hi@billgo.me"
 
 ENV IMAGE_INFO="$(lsb_release -ds), Node $(node -v), Playwright $(playwright -V)"
 RUN yarn global add playwright-core@1.40 && playwright-core install --with-deps chromium
-RUN apt update && apt -y install curl libatomic1 ffmpeg make python3 gcc g++ lsb-core fonts-noto-cjk fonts-wqy-zenhei && apt-get clean
+RUN apt-get update && \
+    apt-get install -y fonts-noto-cjk fonts-wqy-zenhei && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 RUN fc-cache -vf
 
 ENV PATH="/usr/bin/chromium:${PATH}"
