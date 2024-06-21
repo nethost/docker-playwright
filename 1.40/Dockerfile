@@ -12,10 +12,6 @@ RUN apt update && apt -y install curl libatomic1 ffmpeg make python3 gcc g++ lsb
 RUN curl -o- "https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_VERSION/install.sh" | bash && rm -rf "$NVM_DIR/.cache"
 RUN fc-cache -vf
 
-COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT ["docker-entrypoint.sh"]
-CMD [ "node" ]
-
 FROM node AS base
 
 ENV IMAGE_INFO="$(lsb_release -ds), Node $(node -v), Playwright $(playwright -V)"
@@ -74,12 +70,16 @@ RUN [ $(arch) == "armv7l" ] || playwright-core install --with-deps webkit
 RUN [ $(arch) == "armv7l" ] || [ $(arch) == "aarch64" ] || playwright-core install --with-deps chrome
 RUN [ $(arch) == "armv7l" ] || [ $(arch) == "aarch64" ] || playwright-core install --with-deps msedge
 
-### Lightweight Playwright ###
+### Playwright ###
 
-FROM node AS latest
+FROM nethost/node:22.3-debian AS latest
 LABEL maintainer="hi@billgo.me"
+
 ENV IMAGE_INFO="$(lsb_release -ds), Node $(node -v), Playwright $(playwright -V)"
-RUN npm i -g yarn@1.22.19 playwright-core@1.40 && rm -rf /root/.npm
-RUN playwright-core install --with-deps chromium
+RUN yarn global add playwright-core@1.40 && playwright-core install --with-deps chromium
+RUN apt update && apt -y install curl libatomic1 ffmpeg make python3 gcc g++ lsb-core fonts-noto-cjk fonts-wqy-zenhei && apt-get clean
+RUN fc-cache -vf
+
 ENV PATH="/usr/bin/chromium:${PATH}"
+RUN mkdir -p /usr/share/fonts && fc-cache -fv
 CMD eval echo $IMAGE_INFO
