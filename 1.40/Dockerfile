@@ -75,14 +75,11 @@ RUN [ $(arch) == "armv7l" ] || [ $(arch) == "aarch64" ] || playwright-core insta
 FROM nethost/node:22.3-debian AS latest
 LABEL maintainer="hi@billgo.me"
 
-ENV IMAGE_INFO="$(lsb_release -ds), Node $(node -v), Playwright $(playwright -V)"
-RUN yarn global add playwright-core@1.40 && playwright-core install --with-deps chromium
+RUN yarn global add playwright-core@1.40 
 RUN apt-get update && \
-    apt-get install -y fonts-noto-cjk fonts-wqy-zenhei && \
+    apt-get install -y chromium fonts-noto-cjk fonts-wqy-zenhei && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-RUN fc-cache -vf
 
 ENV PATH="/usr/bin/chromium:${PATH}"
 RUN mkdir -p /usr/share/fonts && fc-cache -fv
-CMD eval echo $IMAGE_INFO
