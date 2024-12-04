@@ -1,0 +1,41 @@
+services:
+  base:
+    build:
+      context: .
+      target: base
+    image: nethost/playwright:base
+  chromium:
+    build:
+      context: .
+      target: chromium
+    image: nethost/playwright:chromium
+  firefox:
+    build:
+      context: .
+      target: firefox
+    image: nethost/playwright:firefox
+  webkit:
+    build:
+      context: .
+      target: webkit
+    image: nethost/playwright:webkit
+  chrome:
+    build:
+      context: .
+      target: chrome
+    image: nethost/playwright:chrome
+  msedge:
+    build:
+      context: .
+      target: msedge
+    image: nethost/playwright:msedge
+  browsers:
+    build:
+      context: .
+      target: browsers
+    image: nethost/playwright:browsers
+  latest:
+    build:
+      context: .
+      target: latest
+    image: nethost/playwright:1.49
